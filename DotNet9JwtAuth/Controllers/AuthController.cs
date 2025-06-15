@@ -1,6 +1,7 @@
 ﻿using DotNet9JwtAuth.Entities;
 using DotNet9JwtAuth.Entities.Models;
 using DotNet9JwtAuth.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,5 +48,18 @@ namespace DotNet9JwtAuth.Controllers
             return Ok(token);
         }
 
+        [Authorize]
+        [HttpGet("user-only")]
+        public IActionResult AuthenticatedOnlyEndpoint()
+        {
+            return Ok("You are authenticated");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-only")]
+        public IActionResult AdminOnlyEndpoint()
+        {
+            return Ok("You are authenticated");
+        }
     }
 }
