@@ -15,31 +15,13 @@ namespace DotNet9JwtAuth.Services
     {
         private readonly UserDbContext _context;
         private readonly IConfiguration _configuration;
-
+        
         public AuthService(UserDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
-        public async Task<string?> LoginAsync(UserDto request)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
-            if (user is null)
-            {
-                return null;
-            }
-
-            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password)
-                == PasswordVerificationResult.Failed)
-            {
-                return null;
-            }
-
-            return GenerateToken(user);
-        }
 
         public async Task<User?> RegisterAsync(UserDto request)
         {
@@ -60,6 +42,22 @@ namespace DotNet9JwtAuth.Services
             return user;
         }
 
+        public async Task<string?> LoginAsync(UserDto request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            if (user is null)
+            {
+                return null;
+            }
+
+            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password)
+                == PasswordVerificationResult.Failed)
+            {
+                return null;
+            }
+
+            return GenerateToken(user);
+        }
 
         private string GenerateToken(User user)
         {
