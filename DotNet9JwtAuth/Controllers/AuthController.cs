@@ -38,14 +38,14 @@ namespace DotNet9JwtAuth.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<string>> Login (UserDto request)
+        public async Task<ActionResult<TokenResponseDto>> Login (UserDto request)
         {
-            var token = await _service.LoginAsync(request);
-            if (token is null)
+            var result = await _service.LoginAsync(request);
+            if (result is null)
             {
                 return BadRequest("Invalid username or password");
             }
-            return Ok(token);
+            return Ok(result);
         }
 
         [Authorize]
@@ -60,6 +60,15 @@ namespace DotNet9JwtAuth.Controllers
         public IActionResult AdminOnlyEndpoint()
         {
             return Ok("You are authenticated");
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        {
+            var result = await _service.RefreshTokenAsync(request);
+            if (result is null)
+                return Unauthorized("Invalid refresh token");
+            return Ok(result);
         }
     }
 }
